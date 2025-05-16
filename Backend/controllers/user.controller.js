@@ -11,9 +11,9 @@ export const createUserController = async (req, res) => {
   }
 
   try {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
 
-    const user = await userService.createUser({ email, password });
+    const user = await userService.createUser({ email, password, username });
 
     // Ensure user is created successfully
     if (!user) {
@@ -22,7 +22,7 @@ export const createUserController = async (req, res) => {
 
     // Generating token for user Authentication
     const token = await user.generateJWT();
-    delete user._doc.password; 
+    delete user._doc.password;
     res.status(201).json({ token, user });
   } catch (error) {
     console.error("Error in createUserController:", error);
@@ -60,7 +60,7 @@ export const loginUserController = async (req, res) => {
 
     // Generating token for user Authentication
     const token = await user.generateJWT();
-
+    delete user._doc.password;
     res.status(201).json({ token, user });
   } catch (error) {
     console.error("Error in loginUserController:", error);
@@ -84,6 +84,21 @@ export const logoutUserController = async (req, res) => {
     res.status(201).json({ message: "logout Successfully  " });
   } catch (error) {
     console.error("Error in logoutUserController:", error);
+
+    res.status(500).json({
+      error: "Internal Server Error",
+      message: error.message,
+    });
+  }
+};
+
+export const getAllUserController = async (req, res) => {
+  try {
+    const loggedInUser = await userModel.findOne({ _id: req.user._id });
+    const allUsers = await userService.getAllUser(loggedInUser._id);
+    res.status(200).json({users:allUsers});
+  } catch (error) {
+    console.error("Error in getAllUserController:", error);
 
     res.status(500).json({
       error: "Internal Server Error",
