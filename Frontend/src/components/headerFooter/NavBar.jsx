@@ -1,7 +1,22 @@
-import {Search,} from "lucide-react"
+import { Search, } from "lucide-react"
 import React from "react";
 
 const Navbar = () => {
+
+
+    const handleLogout = async () => {
+        try {
+            await axiosInstance.get("/logout"); // Call backend logout API
+        } catch (error) {
+            console.error("Logout failed:", error);
+        } finally {
+            localStorage.removeItem("token"); // Clear the token
+            window.location.href = "/login"; // Redirect to login page
+        }
+    };
+
+
+
     return (
         <header>
             <nav>
@@ -18,10 +33,10 @@ const Navbar = () => {
                                 className="border-2 p-1 rounded bg-white border-gray-300  w-24 md:w-auto"
                             />
                             <button>
-                            <Search className="text-gray-600 w-5 h-5" />
+                                <Search className="text-gray-600 w-5 h-5" />
 
-                                
-                            
+
+
                             </button>
                         </span>
                         <div className="dropdown dropdown-end text-white">
@@ -50,7 +65,9 @@ const Navbar = () => {
                                     <a>Settings</a>
                                 </li>
                                 <li>
-                                    <a>Logout</a>
+                                    <a onClick={handleLogout} role="button">
+                                        Logout
+                                    </a>
                                 </li>
                             </ul>
                         </div>
